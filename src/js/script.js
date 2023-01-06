@@ -89,6 +89,8 @@
       //console.log('thisProduct.cartButton',thisProduct.cartButton);
       thisProduct.priceElem = thisProduct.element.querySelector(select.menuProduct.priceElem);
       //console.log('thisProduct.priceElem',thisProduct.priceElem);
+      thisProduct.imageWrapper = thisProduct.element.querySelector(select.menuProduct.imageWrapper);
+      console.log('thisProduct.imageWrapper', thisProduct.imageWrapper);
     }
 
     initAccordion() {
@@ -157,15 +159,20 @@
         for (let optionId in param.options) {
           // determine option value, e.g. optionId = 'olives', option = { label: 'Olives', price: 2, default: true }
           const option = param.options[optionId];
-          console.log('optionId', optionId, option);
+          const optionImage = thisProduct.imageWrapper.querySelector('.'+paramId+'-'+optionId);
+          console.log('image',optionImage);
+          
+          //console.log('optionId', optionId, option);
           //console.log('option.price', option.price);
 
           // check if there is param with a name of paramId in formData and if it includes optionId
-          if (formData[paramId] && formData[paramId].includes(optionId)) {
+          const optionSelected = formData[paramId] && formData[paramId].includes(optionId);
+          console.log('optionSelected',optionSelected)
+          if (optionSelected) {
             // check if the option is not default
             if (!option.default == true) {
               // add option price to price variable
-              price = price + option.price; 
+              price = price + option.price;
             }
           } else {
             // check if the option is default
@@ -174,15 +181,14 @@
               price = price - option.price;
             }
           }
-          /*for (let formElem in formData){
-            if (option == formElem){
-              if(!option.default == true){
-                thisProduct.priceElem += option.price;
-              }
-            }
 
-          }*/
-          //raise or lower price or leave
+          if (optionImage != null){
+            if(optionSelected == true) {
+              optionImage.classList.add(classNames.menuProduct.imageVisible);              
+            } else {
+              optionImage.classList.remove(classNames.menuProduct.imageVisible);
+            }
+          }
         }
       }
 
