@@ -7,6 +7,7 @@
   const select = {
     templateOf: {
       menuProduct: '#template-menu-product',
+      cartProduct: '#template-cart-product',
     },
     containerOf: {
       menu: '#product-list',
@@ -27,10 +28,28 @@
     },
     widgets: {
       amount: {
-        input: 'input[name="amount"]',
+        input: 'input.amount',
         linkDecrease: 'a[href="#less"]',
         linkIncrease: 'a[href="#more"]',
       },
+    },
+    cart: {
+      productList: '.cart__order-summary',
+      toggleTrigger: '.cart__summary',
+      totalNumber: '.cart__total-number',
+      totalPrice: '.cart__total-price strong, .cart__order-total cart__order-price-sum',
+      subtotalPrice: 'cart__order-subtotal .cart__order-price-sum strong',
+      deliveryFee: 'cart__order-delivery .cart__order-price-sum strong',
+      form: '.cart__order',
+      formSubmit: '.cart__order [type="submit"]',
+      phone: '[name="phone"]',
+      address: '[name="address"]',
+    },
+    cartProduct: {
+      amountWidget: '.widget-amount',
+      price: '.cart__product-price',
+      edit: '[href="#edit"]',
+      remove: '[href="#remove"]',
     },
   };
 
@@ -39,6 +58,10 @@
       wrapperActive: 'active',
       imageVisible: 'active',
     },
+
+    cart: {
+      wrapperActive: 'active',      
+    },
   };
 
   const settings = {
@@ -46,11 +69,16 @@
       defaultValue: 1,
       defaultMin: 1,
       defaultMax: 9,
-    }
+    },
+
+    cart: {
+      defaultDeliveryFee: 20,
+    },
   };
 
   const templates = {
     menuProduct: Handlebars.compile(document.querySelector(select.templateOf.menuProduct).innerHTML),
+    cartProduct: Handlebars.compile(document.querySelector(select.templateOf.cartProduct).innerHTML),
   };
 
   class Product {
@@ -101,7 +129,7 @@
       const thisProduct = this;
 
       thisProduct.amountWidget = new AmountWidget(thisProduct.amountWidgetElem);
-      thisProduct.amountWidgetElem.addEventListener('updated', function(){
+      thisProduct.amountWidgetElem.addEventListener('updated', function () {
         thisProduct.processOrder();
       });
     }
@@ -206,7 +234,7 @@
       }
 
       // update calculated price in the HTML
-      price *= thisProduct.amountWidget.value; 
+      price *= thisProduct.amountWidget.value;
       thisProduct.priceElem.innerHTML = price;
     }
   }
@@ -214,15 +242,11 @@
   class AmountWidget {
     constructor(element) {
       const thisWidget = this;
-      
-      
+
       thisWidget.getElements(element);
       thisWidget.initActions();
       thisWidget.setValue(settings.amountWidget.defaultValue);
-      
       thisWidget.anounce();
-      
-            
 
       console.log('AmountWidget', thisWidget);
       console.log('constructor arguments:', element);
@@ -244,7 +268,7 @@
 
       /* TODO: Add validation */
       if (thisWidget.value !== newValue && !isNaN(newValue) && newValue >= settings.amountWidget.defaultMin && newValue <= settings.amountWidget.defaultMax) {
-     
+
         thisWidget.value = newValue;
         thisWidget.input.value = thisWidget.value;
       }
@@ -271,11 +295,9 @@
       const thisWidget = this;
 
       const event = new Event('updated');
-      thisWidget. element.dispatchEvent(event);
+      thisWidget.element.dispatchEvent(event);
     }
   }
-
-
 
   const app = {
     initMenu: function () {
